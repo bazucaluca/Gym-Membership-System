@@ -25,9 +25,9 @@ class Program
             {
                 return member;
             }
-            else
-                Console.WriteLine("Member not found");
-                    return null;
+        Console.WriteLine("Member not found");
+                return null;
+            
     }
     static void Menu()
     {
@@ -45,10 +45,23 @@ class Program
                 case 0://Exit
 
                     Console.WriteLine("exit");
+                    Environment.Exit(0);
                     break;
                 case 1://Create a member
                     Console.WriteLine("Enter MemberID");
                     string MemberID = Console.ReadLine();
+                    bool IDExists = false; //checking if the Member ID already exists
+                    foreach (Member member in MemberList)
+                    {
+                        if (member.MemberID == MemberID)
+                        {
+                            IDExists = true;
+                            Console.WriteLine("Cannot create multiple members with the same ID");
+                            break;
+
+                        }
+                        if (IDExists) { break; }
+                    }
                     Console.WriteLine("Enter First Name");
                     string FName_ = Console.ReadLine();
                     Console.WriteLine("Enter Surname");
@@ -106,7 +119,7 @@ class Program
                             case 3:
                                 Console.WriteLine("Enter new Age");
                                 int UpdateAge = int.Parse(Console.ReadLine());
-                                if (UpdateAge >= 18) {
+                                if (UpdateAge <= 18) {
                                     Console.WriteLine("Age Must be Over 18");
                                     break;
                                         }
@@ -127,12 +140,23 @@ class Program
 
             
                 case 5://Remove meber
-                    
+                    Member DeleteMember = MemberSearch();
+                    if (DeleteMember != null)
+                    {
+                        MemberList.Remove(DeleteMember);
+                    }
                     break;
 
                 case 6://Member summary
-                    Console.WriteLine();
+
+                    int TotalMembers = MemberList.Count;
+                    int MonthIncome = TotalMembers * 30;
+                    int AnnualIncome = MonthIncome * 12;
+                    Console.WriteLine($"Total number of members: {TotalMembers}");
+                    Console.WriteLine($"Monthly Membership Income: £{MonthIncome}");
+                    Console.WriteLine($"Annual Income: £{AnnualIncome}");
                     break;
+                    
                 default:
                     Console.WriteLine("Invalid input, enter a number 0-6");
                     break;
@@ -143,14 +167,24 @@ class Program
 }
     class Member
     {
-        public string MemberID;
-        public string FName;
-        public string Sname;
-        public int Age;
-        public string Email;
+        public string MemberID { get; set; }
+    public string FName{ get; set; }
+    public string Sname{ get; set; }
+    public int Age{ get; set; }
+    public string Email{ get; set; }
+    public decimal fee=30;
         public Member(string MemberID_, string FName_, string Sname_, int Age_, string Email_)
         {
             MemberID = MemberID_; FName = FName_; Sname = Sname_; Age = Age_; Email = Email_;
         Console.WriteLine("success");
         }
+    public decimal CalcAnnualCost()
+    {
+        return fee * 12;
     }
+}
+class membership
+{
+    string MembershipType { get; set; }
+    int MembershipPrice { get; set; }
+}
