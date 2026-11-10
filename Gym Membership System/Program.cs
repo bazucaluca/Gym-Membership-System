@@ -2,10 +2,15 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Security.Cryptography.X509Certificates;
+using System.Xml.Linq;
 
 class Program
 {
-    static List<Member> MemberList = new List<Member>();
+    static List<Member> MemberList = new List<Member>();//list of members
+    static List<Membership> MembershipList = new List<Membership>();//list of memberships
+    static Membership standard = new Membership("standard", 30);
+    static Membership premium = new Membership("premium", 45);
+    static Membership student = new Membership("student", 20);
     static void Main(string[] args)
     {
         
@@ -15,7 +20,8 @@ class Program
 
 
     }
-
+    
+    
     static Member MemberSearch()//returns member
     {
         Console.WriteLine("Enter MemberID of desired member");
@@ -29,23 +35,51 @@ class Program
                 return null;
             
     }
+    static Membership MembershipSearch(string SearchMembership)//returns membership
+    {
+
+        foreach (Membership membership in MembershipList)
+        {
+            if (membership.MembershipType == SearchMembership)
+            {
+                return membership;
+            }
+            
+                
+            
+        }
+        Console.WriteLine("Membership not found");
+        return null;
+    }
     static void Menu()
     {
         
         int MenuChoice = -1;
-        //Prints the menu choices
         
-        do
+        do//loop waiting for user to inout a menu choice
         { 
             Console.WriteLine("========================================\r\nGYM MEMBERSHIP SYSTEM\r\n========================================\r\n1. Create Member\r\n2. List Members\r\n3. Search for Member\r\n4. Update Member\r\n5. Remove Member\r\n6. Membership Summary\r\n0. Exit\r\nPlease select an option:");
-            MenuChoice = int.Parse(Console.ReadLine());
+            
+            if ((int.TryParse(Console.ReadLine(), out MenuChoice)==false))
+            {
+                Console.WriteLine("Please enter a valid number listed");
+                continue;
+            }
 
             switch (MenuChoice)
             {
-                case 0://Exit
+                case 0:
+                    Console.WriteLine("Are you sure you want to exit (Y/N)");
+                    string ExitConfirm = Console.ReadLine();
 
-                    Console.WriteLine("exit");
-                    Environment.Exit(0);
+                    if (ExitConfirm == "Y")
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        MenuChoice = -1;
+                    }
                     break;
                 case 1://Create a member
                     Console.WriteLine("Enter MemberID");
@@ -68,7 +102,7 @@ class Program
                     string SName_ = Console.ReadLine();
                     Console.WriteLine("Enter Age");
                     int Age_ = int.Parse(Console.ReadLine());
-                    if (Age_ < 18)
+                    if (Age_ <= 18)
                     {
                         Console.WriteLine("Age Must be over 18 to proceed");
                         break;
@@ -76,7 +110,15 @@ class Program
 
                     Console.WriteLine("Enter Email");
                     string Email_ = Console.ReadLine();
-                    Member member1 = new Member(MemberID, FName_, SName_, Age_, Email_);
+                    if(!Email_.Contains("@") || !Email_.Contains("."))
+                    {
+                        Console.WriteLine("Enter a valid email address");
+                        break;
+                    }
+                    Console.WriteLine("Enter membership type:\r\n Standard: £30\r\nPremium: £45, 1 free fitness class per month\r\nStudent £20, 10% student discount");
+                   string MembershipChoice=Console.ReadLine();
+                    Membership MemberMembership_ =MembershipSearch(MembershipChoice);
+                    Member member1 = new Member(MemberID, FName_, SName_, Age_, Email_,MemberMembership_);
                     MemberList.Add(member1);
                     break;
                 case 2://List members
@@ -84,7 +126,7 @@ class Program
                     foreach (Member member in MemberList)
                     {
                         Console.WriteLine("____________________");
-                        Console.WriteLine($"{member.MemberID} {member.FName} {member.Sname} {member.Age} {member.Email}");
+                        Console.WriteLine($"{member.MemberID} {member.FName} {member.Sname} {member.Age} {member.Email} {member.MemberMembership}");
 
 
                     }
@@ -94,7 +136,7 @@ class Program
                     
                    Member SearchMember = MemberSearch();
                     if (SearchMember != null){
-                        Console.WriteLine($"{SearchMember.MemberID} {SearchMember.FName} {SearchMember.Sname} {SearchMember.Age} {SearchMember.Email}");
+                        Console.WriteLine($"{SearchMember.MemberID} {SearchMember.FName} {SearchMember.Sname} {SearchMember.Age} {SearchMember.Email} {SearchMember.MemberMembership}");
                     }
                     break;
                 case 4://Update member
@@ -102,7 +144,7 @@ class Program
                     if (UpdateMember != null)
                     {
 
-                        Console.WriteLine("--CHOOSE A FIELD TO UPDATE--\r\n1. First Name\r\n2. Surname\r\n3. Age\r\n4. Email\r\nPlease select an option:");
+                        Console.WriteLine("--CHOOSE A FIELD TO UPDATE--\r\n1. First Name\r\n2. Surname\r\n3. Age\r\n4. Email\r\n5. Membership Type\r\nPlease select an option:");
                         int UpdateChoice = int.Parse(Console.ReadLine());
                         switch (UpdateChoice)
                         {
@@ -129,6 +171,12 @@ class Program
                                 Console.WriteLine("Enter new Email");
                                 UpdateMember.Email = Console.ReadLine();
                                 break;
+                            case 5:
+                                Console.WriteLine("enter New Membership type");
+                                string UpdateMembershipType=Console.ReadLine();
+                                Membership UpdateMembership = MembershipSearch(UpdateMembershipType);
+                                UpdateMember.MemberMembership = UpdateMembership;
+                                break;
                             default:
                                 Console.WriteLine("Not an option");
                                 break;
@@ -148,11 +196,28 @@ class Program
                     break;
 
                 case 6://Member summary
-
+                    int StandardCount = 0;
+                    int PremiumCount = 0;
+                    int StudentCount = 0;
+                    for each (Member member in MemberList)
+                    {
+                        if (member.MemberMembership.MembershipType == "standard")
+                        {
+                            StandardCount++;
+                        }
+                        else if (member.MemberMembership.MembershipType == "premium")
+                        {
+                            PremiumCount++;
+                        }
+                        else if (member.MemberMembership.MembershipType == "student")
+                        {
+                           StudentCount++;
+                        }
+                    }
                     int TotalMembers = MemberList.Count;
-                    int MonthIncome = TotalMembers * 30;
+                    int MonthIncome = StandardCount * 30 + PremiumCount * 45 + StudentCount * 20;
                     int AnnualIncome = MonthIncome * 12;
-                    Console.WriteLine($"Total number of members: {TotalMembers}");
+                    Console.WriteLine($"Total number of members: {TotalMembers}, Standard: {StandardCount}, Premium: {PremiumCount}, Student: {StudentCount}");
                     Console.WriteLine($"Monthly Membership Income: £{MonthIncome}");
                     Console.WriteLine($"Annual Income: £{AnnualIncome}");
                     break;
@@ -162,7 +227,7 @@ class Program
                     break;
             }
         }
-        while (0 <= MenuChoice && MenuChoice <= 6);
+        while (MenuChoice!=0);
     }
 }
     class Member
@@ -172,10 +237,11 @@ class Program
     public string Sname{ get; set; }
     public int Age{ get; set; }
     public string Email{ get; set; }
-    public decimal fee=30;
-        public Member(string MemberID_, string FName_, string Sname_, int Age_, string Email_)
+    private decimal fee=30;
+    public Membership MemberMembership;
+        public Member(string MemberID_, string FName_, string Sname_, int Age_, string Email_,Membership MemberMembership_)
         {
-            MemberID = MemberID_; FName = FName_; Sname = Sname_; Age = Age_; Email = Email_;
+            MemberID = MemberID_; FName = FName_; Sname = Sname_; Age = Age_; Email = Email_;MemberMembership = MemberMembership_;
         Console.WriteLine("success");
         }
     public decimal CalcAnnualCost()
@@ -183,8 +249,13 @@ class Program
         return fee * 12;
     }
 }
-class membership
+class Membership
 {
-    string MembershipType { get; set; }
+    public string MembershipType { get; set; }
     int MembershipPrice { get; set; }
+    public Membership(string MembershipType_, int MembershipPrice_)
+    {
+        MembershipType=MembershipType_;MembershipPrice=MembershipPrice_;
+    }
+    
 }
