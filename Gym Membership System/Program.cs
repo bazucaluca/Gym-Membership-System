@@ -13,7 +13,9 @@ class Program
     static Membership student = new Membership("student", 20);
     static void Main(string[] args)
     {
-        
+        MembershipList.Add(standard);  
+        MembershipList.Add(premium);
+        MembershipList.Add(student);
         Program.Menu();
 
 
@@ -30,6 +32,7 @@ class Program
             if (member.MemberID == SearchID)
             {
                 return member;
+                
             }
         Console.WriteLine("Member not found");
                 return null;
@@ -94,8 +97,9 @@ class Program
                             break;
 
                         }
-                        if (IDExists) { break; }
+                        
                     }
+                    if (IDExists) { break; }
                     Console.WriteLine("Enter First Name");
                     string FName_ = Console.ReadLine();
                     Console.WriteLine("Enter Surname");
@@ -199,7 +203,7 @@ class Program
                     int StandardCount = 0;
                     int PremiumCount = 0;
                     int StudentCount = 0;
-                    for each (Member member in MemberList)
+                    foreach (Member member in MemberList)
                     {
                         if (member.MemberMembership.MembershipType == "standard")
                         {
@@ -215,13 +219,21 @@ class Program
                         }
                     }
                     int TotalMembers = MemberList.Count;
-                    int MonthIncome = StandardCount * 30 + PremiumCount * 45 + StudentCount * 20;
-                    int AnnualIncome = MonthIncome * 12;
+                    decimal MonthIncome = 0;
+                    foreach (Member member in MemberList)
+                    {
+                        MonthIncome += member.MemberMembership.MembershipPrice;
+                    }
+                    decimal AnnualIncome = MonthIncome * 12;
                     Console.WriteLine($"Total number of members: {TotalMembers}, Standard: {StandardCount}, Premium: {PremiumCount}, Student: {StudentCount}");
                     Console.WriteLine($"Monthly Membership Income: £{MonthIncome}");
                     Console.WriteLine($"Annual Income: £{AnnualIncome}");
                     break;
                     
+                foreach (Member member in MemberList)
+                {
+                    MonthIncome += member.MemberMembership.MembershipPrice;
+                }
                 default:
                     Console.WriteLine("Invalid input, enter a number 0-6");
                     break;
@@ -237,23 +249,20 @@ class Program
     public string Sname{ get; set; }
     public int Age{ get; set; }
     public string Email{ get; set; }
-    private decimal fee=30;
+
     public Membership MemberMembership;
         public Member(string MemberID_, string FName_, string Sname_, int Age_, string Email_,Membership MemberMembership_)
         {
             MemberID = MemberID_; FName = FName_; Sname = Sname_; Age = Age_; Email = Email_;MemberMembership = MemberMembership_;
         Console.WriteLine("success");
         }
-    public decimal CalcAnnualCost()
-    {
-        return fee * 12;
-    }
+    
 }
 class Membership
 {
     public string MembershipType { get; set; }
-    int MembershipPrice { get; set; }
-    public Membership(string MembershipType_, int MembershipPrice_)
+    public decimal MembershipPrice { get; set; }
+    public Membership(string MembershipType_, decimal MembershipPrice_)
     {
         MembershipType=MembershipType_;MembershipPrice=MembershipPrice_;
     }
