@@ -13,7 +13,7 @@ class Program
     static Membership Student = new Membership("Student", 20);
     static void Main(string[] args)
     {
-        MembershipList.Add(Standard);  
+        MembershipList.Add(Standard);
         MembershipList.Add(Premium);
         MembershipList.Add(Student);
         Menu();
@@ -22,8 +22,8 @@ class Program
 
 
     }
-    
-    
+
+
     static Member MemberSearch()//returns member
     {
         Console.WriteLine("Enter MemberID of desired member");
@@ -32,11 +32,11 @@ class Program
             if (member.MemberID == SearchID)
             {
                 return member;
-                
+
             }
         Console.WriteLine("Member not found");
-                return null;
-            
+        return null;
+
     }
     static Membership MembershipSearch(string SearchMembership)//returns membership
     {
@@ -47,9 +47,9 @@ class Program
             {
                 return membership;
             }
-            
-                
-            
+
+
+
         }
         Console.WriteLine("Membership not found");
         return null;
@@ -73,7 +73,8 @@ class Program
 
         }
         if (IDExists) { return; }
-        if (MemberID = "") { 
+        if (MemberID = "")
+        {
             Console.WriteLine("Cannot have empty MemberID");
             return;
         }
@@ -112,7 +113,11 @@ class Program
         }
         Console.WriteLine("Enter membership type:\r\n Standard: £30\r\nPremium: £45, 1 free fitness class per month\r\nStudent £20, 10% student discount\r\nEnter 1 for standard, 2 for premium, 3 for student");
 
-        int MembershipMenuChoice = int.Parse(Console.ReadLine());
+        if (!int.TryParse(Console.ReadLine(), out int MembershipMenuChoice))
+        {
+            Console.WriteLine("Invalid choice entered");
+            return;
+        }
         string MembershipChoice;
         switch (MembershipMenuChoice)
         {
@@ -155,13 +160,17 @@ class Program
     }
     static void UpdateMember()
     {
-        bool UpdateComplete=false
+        bool UpdateComplete = false
         Member UpdateMember = MemberSearch();
         if (UpdateMember != null)
         {
 
             Console.WriteLine("--CHOOSE A FIELD TO UPDATE--\r\n1. First Name\r\n2. Surname\r\n3. Age\r\n4. Email\r\n5. Membership Type\r\nPlease select an option:");
-            int UpdateChoice = int.Parse(Console.ReadLine());
+            if (!int.TryParse(Console.ReadLine(), out int UpdateChoice))
+            {
+                Console.WriteLine("Please enter a valid number");
+                return;
+            }
             switch (UpdateChoice)
             {
 
@@ -196,21 +205,22 @@ class Program
                     string UpdateMembershipType = Console.ReadLine();
                     Membership UpdateMembership = MembershipSearch(UpdateMembershipType);
                     if (UpdateMembership = null) ;
-                    { 
+                    {
                         UpdateMember.MemberMembership = UpdateMembership;
                         UpdateComplete = true;
                     }
-                    else { 
-                    Console.WriteLine("Membership Not Updated")
+                    else
+                    {
+                        Console.WriteLine("Membership Not Updated")
                     }
 
 
-                        break;
+                    break;
                 default:
                     Console.WriteLine("Not an option");
                     break;
             }
-            
+
         }
         if (UpdateComplete = true) { Console.WriteLine("Update Completed Sucessfully")}
     }
@@ -255,14 +265,14 @@ class Program
     }
     static void Menu()
     {
-        
+
         int MenuChoice = -1;
-        
+
         do//loop waiting for user to inout a menu choice
-        { 
+        {
             Console.WriteLine("========================================\r\nGYM MEMBERSHIP SYSTEM\r\n========================================\r\n1. Create Member\r\n2. List Members\r\n3. Search for Member\r\n4. Update Member\r\n5. Remove Member\r\n6. Membership Summary\r\n0. Exit\r\nPlease select an option:");
-            
-            if ((int.TryParse(Console.ReadLine(), out MenuChoice)==false))
+
+            if ((int.TryParse(Console.ReadLine(), out MenuChoice) == false))
             {
                 Console.WriteLine("Please enter a valid number listed");
                 continue;
@@ -288,9 +298,9 @@ class Program
                     break;
                 case 2://List members
                     ListMembers();
-                        
 
-                        break;
+
+                    break;
                 case 3://Member Search
 
                     SearchMember();
@@ -298,9 +308,9 @@ class Program
                 case 4://Update member
                     UpdateMember();
                     break;
-                        
 
-            
+
+
                 case 5://Remove meber
                     RemoveMember();
                     break;
@@ -308,31 +318,31 @@ class Program
                 case 6://Member summary
                     MemberSummary();
                     break;
-                    
-                
+
+
                 default:
                     Console.WriteLine("Invalid input, enter a number 0-6");
                     break;
             }
         }
-        while (MenuChoice!=0);
+        while (MenuChoice != 0);
     }
 }
-    class Member
-    {
-        public string MemberID { get; set; }
-    public string FName{ get; set; }
-    public string Sname{ get; set; }
-    public int Age{ get; set; }
-    public string Email{ get; set; }
+class Member
+{
+    public string MemberID { get; set; }
+    public string FName { get; set; }
+    public string Sname { get; set; }
+    public int Age { get; set; }
+    public string Email { get; set; }
 
     public Membership MemberMembership;
-        public Member(string MemberID_, string FName_, string Sname_, int Age_, string Email_,Membership MemberMembership_)
-        {
-            MemberID = MemberID_; FName = FName_; Sname = Sname_; Age = Age_; Email = Email_;MemberMembership = MemberMembership_;
+    public Member(string MemberID_, string FName_, string Sname_, int Age_, string Email_, Membership MemberMembership_)
+    {
+        MemberID = MemberID_; FName = FName_; Sname = Sname_; Age = Age_; Email = Email_; MemberMembership = MemberMembership_;
         Console.WriteLine("sucess");
-        }
-    
+    }
+
 }
 class Membership
 {
@@ -340,7 +350,7 @@ class Membership
     public decimal MembershipPrice { get; set; }
     public Membership(string MembershipType_, decimal MembershipPrice_)
     {
-        MembershipType=MembershipType_;MembershipPrice=MembershipPrice_;
+        MembershipType = MembershipType_; MembershipPrice = MembershipPrice_;
     }
-    
+
 }
